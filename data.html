@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Form</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+        }
+        
+        .section {
+            margin-bottom: 20px;
+        }
+        
+        .section h2 {
+            margin-top: 0;
+        }
+        
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .row label {
+            width: 100px;
+            flex-shrink: 0;
+        }
+        
+        .row input {
+            flex-grow: 1;
+        }
+        
+        button {
+            margin-top: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="section">
+            <h2>GPS Data</h2>
+            <div class="row">
+                <label for="gps_lat">Latitude:</label>
+                <input type="text" id="gps_lat">
+            </div>
+            <div class="row">
+                <label for="gps_lon">Longitude:</label>
+                <input type="text" id="gps_lon">
+            </div>
+            <div class="row">
+                <label for="gps_alt">Altitude:</label>
+                <input type="text" id="gps_alt">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Battery Data</h2>
+            <div class="row">
+                <label for="battery_voltage">Voltage:</label>
+                <input type="text" id="battery_voltage">
+            </div>
+            <div class="row">
+                <label for="battery_current">Current:</label>
+                <input type="text" id="battery_current">
+            </div>
+            <div class="row">
+                <label for="battery_remaining">Remaining:</label>
+                <input type="text" id="battery_remaining">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>IMU Data</h2>
+            <div class="row">
+                <label for="imu_roll">Roll:</label>
+                <input type="text" id="imu_roll">
+            </div>
+            <div class="row">
+                <label for="imu_pitch">Pitch:</label>
+                <input type="text" id="imu_pitch">
+            </div>
+            <div class="row">
+                <label for="imu_yaw">Yaw:</label>
+                <input type="text" id="imu_yaw">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Compass Data</h2>
+            <div class="row">
+                <label for="compass_heading">Heading:</label>
+                <input type="text" id="compass_heading">
+            </div>
+            <div class="row">
+                <label for="compass_groundspeed">Ground Speed:</label>
+                <input type="text" id="compass_groundspeed">
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Temperature Data</h2>
+            <div class="row">
+                <label for="temperature">Temperature:</label>
+                <input type="text" id="temperature">
+            </div>
+        </div>
+        <div class="section" style="display:none;">
+            <h2>Drone Time</h2>
+            <div class="row">
+                <label for="time">Time:</label>
+                <input type="text" id="time">
+            </div>
+        </div>
+        <div class="section">
+            <h2>Nav Output</h2>
+            <div class="row">
+                <label for="nav_pitch">Nav Pitch:</label>
+                <input type="text" id="nav_pitch">
+            </div>
+            <div class="row">
+                <label for="nav_roll">Nav Roll:</label>
+                <input type="text" id="nav_roll">
+            </div>
+        </div>
+        <!-- <button onclick="toggleGUI()">Open GUI</button> -->
+    </div>
+
+    <script>
+        function updateJS(number) {
+            document.getElementById('imu_yaw').value = number;
+        }
+    </script>
+
+    <script>
+        let dataRaw
+
+        function updateVariables(data) {
+            dataRaw = data
+            for (const key in data) {
+                document.getElementById(key).value = data[key];
+            }
+        }
+    </script>
+</body>
+
+</html>

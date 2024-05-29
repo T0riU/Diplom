@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            height: 400px;
+            justify-content: center;
+        }
+        
+        .status {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 80px;
+        }
+        
+        .controls,
+        .inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .inputs {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        input {
+            padding: 5px;
+            font-size: 1em;
+            width: 100px;
+            text-align: center;
+        }
+        
+        label {
+            margin-right: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        .in_cont {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="status"><span id="status">Status: </span><span id="status-text">Idle</span></div>
+        <div class="controls">
+            <button id="takeoff" onclick="takeoff()">Takeoff</button>
+            <button id="land" onclick="land()">Land</button>
+        </div>
+        <div class="inputs">
+            <div class="in_cont">
+                <label for="altitude">Altitude:</label>
+                <input name="altitude" type="number" id="altitude" placeholder="Altitude" min="0" max="500" onkeyup="enforceMinMax(this)" value="5">
+            </div>
+            <div class="in_cont">
+                <label for="latitude">Latitude:</label>
+                <input name="latitude" type="number" id="latitude" placeholder="Latitude" min="-10000" max="1000" onkeyup="enforceMinMax(this)" value="0">
+            </div>
+            <div class="in_cont">
+                <label for="longitude">Longitude:</label>
+                <input name="longitude" type="number" id="longitude" placeholder="Longitude" min="-1000" max="1000" onkeyup="enforceMinMax(this)" value="0">
+            </div>
+        </div>
+        <button id="setPosition" onclick="setPosition()">Set Position</button>
+    </div>
+
+    <script>
+        function enforceMinMax(el) {
+            if (el.value != "") {
+                if (parseInt(el.value) < parseInt(el.min)) {
+                    el.value = el.min;
+                }
+                if (parseInt(el.value) > parseInt(el.max)) {
+                    el.value = el.max;
+                }
+            }
+        }
+
+        function takeoff() {
+            const altitude = document.getElementById('altitude').value;
+            window.pywebview.api.takeoff(altitude);
+        }
+
+        function land() {
+            window.pywebview.api.land();
+        }
+
+        function setPosition() {
+            const altitude = document.getElementById('altitude').value;
+            const latitude = document.getElementById('latitude').value;
+            const longitude = document.getElementById('longitude').value;
+            window.pywebview.api.setPosition(latitude, longitude, altitude);
+        }
+
+        function setStatus(text, error) {
+            if (error) {
+                document.getElementById("status").style.color = "#810303";
+                document.getElementById("status").textContent = 'Error:';
+            } else {
+                document.getElementById("status").style.color = "#03811e"
+                document.getElementById("status").textContent = 'Status:';
+            }
+            document.getElementById('status-text').textContent = text.toString();
+        }
+
+        function setValues(lat, lon, alt) {
+            document.getElementById('altitude').value = parseInt(alt);
+            document.getElementById('latitude').value = parseInt(lat);
+            document.getElementById('longitude').value = parseInt(lon);
+        }
+        setStatus("Idle");
+    </script>
+</body>
+
+</html>

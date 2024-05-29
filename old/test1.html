@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hud</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            justify-content: left;
+            align-items: center;
+        }
+        
+        #compasCont .compass {
+            position: relative;
+            width: 100%;
+            height: 2rem;
+            overflow: hidden;
+            mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent 100%);
+        }
+        
+        #compasCont .points {
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: calc(var(--left, 0) - 100%);
+            display: flex;
+            gap: 1rem;
+        }
+        
+        #compasCont .point {
+            position: relative;
+            flex-shrink: 0;
+            width: 7.5%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 900;
+            font-size: 1.25rem;
+            height: 3rem;
+            &::before {
+                content: '';
+                position: absolute;
+                bottom: 80%;
+                left: calc(50% - 1px);
+                width: 2px;
+                height: 1rem;
+                background: currentColor;
+            }
+        }
+        
+        #compasCont .line {
+            position: absolute;
+            height: 3rem;
+            width: 2px;
+            background-color: rgb(148, 21, 21);
+            text-align: center;
+        }
+        
+        #compasCont .linetext {
+            position: absolute;
+            top: 60px;
+            font-weight: 450;
+            font-size: 1.25rem;
+            height: 3rem;
+            text-align: center;
+        }
+        
+        #compasCont {
+            padding: 1rem;
+            font-family: sans-serif;
+            display: flex;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            justify-content: center;
+            margin-left: 10px;
+        }
+        
+        .ruler-container {
+            width: 100px;
+            height: 300px;
+            position: absolute;
+            overflow: hidden;
+            border: 2px solid black;
+        }
+        
+        .ruler-container.Alt {
+            left: 10px;
+        }
+        
+        .ruler-container.S {
+            right: 10px;
+        }
+        
+        .ruler-container .ruler {
+            position: absolute;
+            width: 100%;
+            top: 0px;
+        }
+        
+        .ruler-container .division {
+            height: 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .ruler-container .division span {
+            position: absolute;
+            left: 10px;
+        }
+        
+        .ruler-container .line {
+            width: 50%;
+            height: 1px;
+            background-color: black;
+            margin-left: auto;
+        }
+        
+        .ruler-container.S .division span {
+            right: 10px;
+            text-align: right;
+        }
+        
+        .ruler-container.S .line {
+            margin-right: auto;
+            margin-left: 0;
+        }
+        
+        .ruler-container .center-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: red;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        
+        .ruler-container .range-slider {
+            margin-top: 20px;
+        }
+        
+        .ruler-container .red-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: red;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+        
+        .ruler-container.P .division span {
+            left: 0px;
+        }
+        
+        .ruler-container.P .line {
+            background-color: white;
+            margin: 0 auto;
+            height: 2px;
+        }
+        
+        .gradient-square {
+            position: relative;
+            margin: 0 auto;
+            width: 700px;
+            height: 700px;
+            background: linear-gradient(180deg, darkblue 0%, lightblue 50%, lightgreen 50%, darkgreen 100%);
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .ruler-container.P {
+            border: 2px none black;
+            margin: 0 auto;
+            color: white;
+            font-weight: 900;
+            font-size: 1.25rem;
+            height: 65%;
+        }
+        
+        .ruler-container .line.short-line {
+            width: 20%;
+            text-align: center;
+            margin: 0 auto;
+        }
+        
+        .arrow {
+            position: relative;
+            width: 100px;
+            height: 0px;
+            transform: rotate(-90deg);
+        }
+        
+        .arrow::before,
+        .arrow::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background-color: red;
+        }
+        
+        .arrow::before {
+            transform: rotate(60deg);
+            right: 0;
+            transform-origin: top right;
+        }
+        
+        .arrow::after {
+            transform: rotate(-60deg);
+            right: 0;
+            transform-origin: bottom right;
+        }
+        
+        .arrow-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 200px;
+            height: 200px;
+            position: relative;
+            transform: translateY(50px);
+        }
+        
+        .red-line-left,
+        .red-line-right {
+            transform: rotate(90deg);
+            position: absolute;
+            width: 4px;
+            height: 100px;
+            background-color: red;
+            top: 0px;
+        }
+        
+        .red-line-left {
+            left: -30px;
+        }
+        
+        .red-line-right {
+            right: -30px;
+        }
+        
+        .deg-arrow {
+            position: relative;
+            width: 100px;
+            height: 0px;
+            transform: rotate(-90deg);
+        }
+        
+        .deg-arrow::before,
+        .deg-arrow::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 3px;
+            background-color: red;
+        }
+        
+        .deg-arrow::before {
+            transform: rotate(45deg);
+            right: 0;
+            transform-origin: top right;
+        }
+        
+        .deg-arrow::after {
+            transform: rotate(-45deg);
+            right: 0;
+            transform-origin: bottom right;
+        }
+        
+        .deg-arrow-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 100px;
+            position: relative;
+            transform: translateY(50px);
+        }
+        
+        .degs {
+            position: absolute;
+            transform: rotateZ(0deg);
+            transform-origin: bottom;
+        }
+        
+        .degs svg {
+            width: 400px;
+            height: 400px;
+            color: white;
+            stroke: white;
+        }
+        
+        .roll {
+            position: absolute;
+            top: 10%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .sign {
+            position: absolute;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: 900;
+            font-size: 1.5rem;
+        }
+        
+        .battery {
+            bottom: 0;
+            left: 0;
+        }
+        
+        .speed {
+            left: 10px;
+            top: 75%;
+        }
+        
+        .altitude {
+            right: 10px;
+            top: 75%;
+        }
+        
+        .time {
+            right: 10px;
+            top: 20%;
+        }
+        
+        .temperature {
+            left: 10px;
+            top: 20%;
+        }
+        
+        .controllers {
+            <!-- display: none;
+            -->
+        }
+    </style>
+</head>
+
+<body onresize="return false;">
+
+    <div class="gradient-square" id="land">
+        <div id="compasCont">
+            <div class="compass">
+                <div class="points">
+                    <div class="point">285</div>
+                    <div class="point">300</div>
+                    <div class="point">NW</div>
+                    <div class="point">330</div>
+                    <div class="point">345</div>
+                    <div class="point">N</div>
+                    <div class="point">15</div>
+                    <div class="point">30</div>
+                    <div class="point">NE</div>
+                    <div class="point">60</div>
+                    <div class="point">75</div>
+                    <div class="point">E</div>
+                    <div class="point">105</div>
+                    <div class="point">120</div>
+                    <div class="point">SE</div>
+                    <div class="point">150</div>
+                    <div class="point">165</div>
+                    <div class="point">S</div>
+                    <div class="point">195</div>
+                    <div class="point">210</div>
+                    <div class="point">SW</div>
+                    <div class="point">240</div>
+                    <div class="point">255</div>
+                    <div class="point">W</div>
+                    <div class="point">285</div>
+                    <div class="point">300</div>
+                    <div class="point">NW</div>
+                    <div class="point">330</div>
+                    <div class="point">345</div>
+                    <div class="point">N</div>
+                    <div class="point">15</div>
+                    <div class="point">30</div>
+                    <div class="point">NE</div>
+                    <div class="point">60</div>
+                    <div class="point">75</div>
+                </div>
+            </div>
+            <div class="line"></div>
+            <div class="linetext" id="compasNum">355</div>
+        </div>
+        <div class="ruler-container Alt">
+            <div class="center-line"></div>
+            <div class="ruler" id="rulerAlt"></div>
+        </div>
+        <div class="ruler-container S">
+            <div class="center-line"></div>
+            <div class="ruler" id="rulerS"></div>
+        </div>
+
+
+        <div class="ruler-container P">
+            <div class="ruler" id="rulerP"></div>
+        </div>
+        <div class="arrow-container">
+            <div class="red-line-left"></div>
+            <div class="arrow"></div>
+            <div class="red-line-right"></div>
+        </div>
+        <div class="roll">
+            <div class="degs" id="roll">
+                <svg width="200" height="200" viewBox="50 100 300 350">
+                    <defs>
+                        <path id="arc" d="M 100,300 A 200,200 0 0,1 300,300" fill="none" stroke="black" stroke-width="2" />
+                    </defs>
+                    <use xlink:href="#arc" />
+                    <g font-family="sans-serif" font-size="12" text-anchor="middle">
+                        <!-- Divisions -->
+                        <line x1="80" y1="300" x2="100" y2="300" stroke="black" stroke-width="2" />
+                        <line x1="110" y1="280" x2="120" y2="290" stroke="black" stroke-width="2" />
+                        <line x1="140" y1="270" x2="150" y2="280" stroke="black" stroke-width="2" />
+                        <line x1="170" y1="260" x2="175" y2="275" stroke="black" stroke-width="2" />
+                        <line x1="200" y1="250" x2="200" y2="275" stroke="black" stroke-width="2" />
+                        <line x1="230" y1="260" x2="225" y2="275" stroke="black" stroke-width="2" />
+                        <line x1="260" y1="270" x2="250" y2="280" stroke="black" stroke-width="2" />
+                        <line x1="290" y1="280" x2="280" y2="290" stroke="black" stroke-width="2" />
+                        <line x1="320" y1="300" x2="300" y2="300" stroke="black" stroke-width="2" />
+                        <!-- Labels -->
+                        <text x="80" y="300">-60</text>
+                        <text x="110" y="280" >-45</text>
+                        <text x="140" y="270" >-30</text>
+                        <text x="170" y="260">-15</text>
+                        <text x="200" y="250" >0</text>
+                        <text x="230" y="260" >15</text>
+                        <text x="260" y="270" >30</text>
+                        <text x="290" y="280" >45</text>
+                        <text x="320" y="300" >60</text>
+                    </g>
+                </svg>
+            </div>
+            <div class="deg-arrow-container">
+                <div class="deg-arrow"></div>
+            </div>
+        </div>
+        <div class="sign battery">Bat:&nbsp<span id="battery"> 12V 0.0A 100%</span></div>
+        <div class="sign time" id="time">12:44:55</div>
+        <div class="sign temperature"><span id="temp">37.7</span>°</div>
+        <div class="sign speed">GS:&nbsp<span id="speed">0</span>&nbspm/s</div>
+        <div class="sign altitude">RA:&nbsp<span id="altitude">0</span>&nbspm</div>
+    </div>
+    <div class="controllers">
+        <div>Yaw</div>
+        <input type="range" id="rangeInput" name="rangeInput" min="0" max="360" value="355">
+        <div>Speed</div>
+        <input type="range" class="range-slider" id="rangeSliderAlt" min="0" max="100" value="0">
+        <div>Height</div>
+        <input type="range" class="range-slider" id="rangeSliderS" min="0" max="100" value="0">
+        <div>Pitch</div>
+        <input type="range" class="range-slider" id="rangePitch" min="0" max="100" value="0">
+        <div>Roll</div>
+        <input type="range" class="range-slider" id="rangeRoll" min="0" max="100" value="0">
+    </div>
+
+</body>
+<script>
+    let dataRaw = null;
+
+    function updateJS(data) {
+        dataRaw = data
+
+        var event = new Event('input');
+        //compass
+        document.getElementById('rangeInput').value = data['compass_heading'];
+        document.getElementById('rangeInput').dispatchEvent(event);
+        document.getElementById('compasNum').textContent = data['compass_heading'];
+        //speed
+        document.getElementById('speed').textContent = parseFloat(data['compass_groundspeed']).toFixed(2)
+        document.getElementById('rangeSliderAlt').value = parseInt(-1 * data['compass_groundspeed']) + maxAltitude;
+        document.getElementById('rangeSliderAlt').dispatchEvent(event);
+        //altitude
+        document.getElementById('altitude').textContent = parseFloat(data['gps_alt']).toFixed(2);
+        document.getElementById('rangeSliderS').value = parseInt(-1 * data['gps_alt']) + MaxSpeed;
+        document.getElementById('rangeSliderS').dispatchEvent(event);
+        //roll
+        document.getElementById('rangeRoll').value = Math.round(parseInt(data['nav_roll'])) + 30; //range -30 to 30
+        document.getElementById('rangeRoll').dispatchEvent(event);
+        //pitch
+        document.getElementById('rangePitch').value = Math.round(parseInt(-1 * data['nav_pitch'])) + maxPitch;
+        document.getElementById('rangePitch').dispatchEvent(event);
+        //battery
+        document.getElementById('battery').textContent = (data['battery_voltage'] + "V " + parseFloat(data['battery_current'], 10).toFixed(2) + "A " + data['battery_remaining'] + "%");
+        //temperature
+        document.getElementById('temp').textContent = data['temperature'];
+        //time
+        document.getElementById('time').textContent = data['time'];
+        console.log("Check")
+    }
+</script>
+<script>
+    function convertToCustomPercentage(value) {
+        const minRange = 0;
+        const maxRange = 360;
+        const minPercent = 97;
+        const maxPercent = -137.5;
+
+        return ((maxPercent - minPercent) / (maxRange - minRange)) * value + minPercent;
+    }
+
+    document.getElementById('rangeInput').addEventListener('input', function() {
+        document.getElementById('compasNum').textContent = rangeInput.value;
+        perValue = convertToCustomPercentage(rangeInput.value);
+        document.getElementById('compasCont').style.setProperty('--left', `${perValue.toFixed(2)}%`);
+    });
+</script>
+<script>
+    const divisionHeight = 10;
+    const step = 5;
+
+    const rulerAlt = document.getElementById('rulerAlt');
+    const rangeSliderAlt = document.getElementById('rangeSliderAlt');
+    const maxAltitude = 3000;
+    const minAltitude = -1000;
+    const pixelstep = divisionHeight + ((divisionHeight * 2) / step);
+
+    rulerAlt.style.top = divisionHeight * step * 2.8 + 'px';
+
+    function one_division(ruler, i_n, content) {
+        const division = document.createElement('div');
+        division.classList.add('division');
+        division.style.top = (i_n * divisionHeight) + 'px';
+        const span = document.createElement('span');
+        span.textContent = content;
+        division.appendChild(span);
+        const line = document.createElement('div');
+        line.classList.add('line');
+        division.appendChild(line);
+        ruler.appendChild(division);
+    }
+
+    function addDivisionAltitude() {
+        let j = 0;
+        for (let i = 0; i <= maxAltitude; i = i + step, j = i) {
+            one_division(rulerAlt, i, maxAltitude - i);
+        }
+        for (let i = 0 - step; i >= minAltitude; i = i - step, j = j + step) {
+            one_division(rulerAlt, j, i);
+        }
+    }
+    addDivisionAltitude();
+    rangeSliderAlt.max = maxAltitude + (-1 * minAltitude);
+    rangeSliderAlt.min = 0;
+    rangeSliderAlt.value = maxAltitude;
+    rulerAlt.style.transform = `translateY(-${maxAltitude*pixelstep}px)`;
+    rangeSliderAlt.addEventListener('input', function() {
+        const scrollValue = this.value;
+        rulerAlt.style.transform = `translateY(-${scrollValue*pixelstep}px)`;
+    });
+</script>
+<script>
+    const rulerS = document.getElementById('rulerS');
+    const rangeSliderS = document.getElementById('rangeSliderS');
+    const minSpeed = -50;
+    const MaxSpeed = 50;
+    rulerS.style.top = divisionHeight * step * 2.8 + 'px';
+
+    function addDivisionSpeed() {
+        let j = 0;
+        for (let i = 0; i <= MaxSpeed; i = i + step, j = i) {
+            one_division(rulerS, i, MaxSpeed - i);
+        }
+        for (let i = minSpeed + step; i <= 0; i = i + step, j = j + step) {
+            one_division(rulerS, j, '-' + (MaxSpeed + i));
+        }
+    }
+    addDivisionSpeed();
+    rangeSliderS.max = MaxSpeed + Math.abs(minSpeed);
+    rangeSliderS.value = MaxSpeed;
+    rulerS.style.transform = `translateY(-${MaxSpeed*pixelstep}px)`;
+    rangeSliderS.addEventListener('input', function() {
+        const scrollValue = this.value;
+        rulerS.style.transform = `translateY(-${scrollValue*pixelstep}px)`;
+    });
+</script>
+<script>
+    const rulerP = document.getElementById('rulerP');
+    const rulerR = document.getElementById('roll');
+    const rangeSliderP = document.getElementById('rangePitch');
+    const rangeSliderR = document.getElementById('rangeRoll');
+    const minPitch = -80;
+    const maxPitch = 80;
+    const divisionH = 5;
+    const stepP = 5;
+    rulerP.style.top = divisionH * stepP * 2.8 + 'px';
+
+    const pixelStepP = divisionH * 4 / stepP + divisionH;
+
+    function one_division_pitch(ruler, i, text, short) {
+        const division = document.createElement('div');
+        division.classList.add('division');
+        division.style.top = (i * divisionH) + 'px';
+        if (!short) {
+            const span = document.createElement('span');
+            span.textContent = text;
+            division.appendChild(span);
+        }
+        const line = document.createElement('div');
+        if (short) {
+            line.classList.add('short-line');
+
+        }
+
+        line.classList.add('line');
+        division.appendChild(line);
+        ruler.appendChild(division);
+    }
+
+    function addDivisionPitch() {
+        let j = 0;
+        let temp = true;
+        for (let i = 0; i <= maxPitch; i = i + stepP, j = i) {
+            if (i % 10 === 0) {
+                temp = false;
+            } else {
+                temp = true
+            }
+            one_division_pitch(rulerP, i, maxPitch - i, temp);
+
+        }
+        for (let i = 0 - stepP; i >= minPitch; i = i - stepP, j = j + stepP) {
+            if (i % 10 === 0) {
+                temp = false;
+            } else {
+                temp = true
+            }
+            one_division_pitch(rulerP, j, i, temp);
+        }
+    }
+    addDivisionPitch();
+    const bg = document.getElementById('land');
+    var stringRoll = `180deg`;
+    var stringPitch = `darkblue 0%, lightblue 50%, lightgreen 50%, darkgreen 100%`;
+
+    function changeBackgroundRoll(degreeR) {
+        stringRoll = `${180+degreeR}deg`;
+        changeBackground();
+    }
+
+    function changeBackgroundPitch(degreeP) {
+        //-50 to 0 and 50 to 100
+
+        var mapValue = 130 - degreeP * (100 - 0) / (130 - 30) + 0;
+        if (mapValue > 100) mapValue = 100;
+        if (mapValue < 0) mapValue = 0
+        stringPitch = `darkblue 0%, lightblue ${mapValue}%, lightgreen ${mapValue}%, darkgreen 100%`;
+        changeBackground();
+    }
+
+    function changeBackground() {
+        bg.style.background = `linear-gradient(${stringRoll}, ${stringPitch})`;
+    }
+
+
+
+    rangeSliderP.max = maxPitch + Math.abs(minPitch);
+    rangeSliderP.value = maxPitch;
+    rulerP.style.top = `${215}px`;
+    rulerP.style.transform = `translateY(-${maxPitch*pixelStepP}px)`;
+    rangeSliderP.addEventListener('input', function() {
+        const scrollValue = this.value;
+        rulerP.style.transform = `translateY(-${scrollValue*pixelStepP}px)`;
+        changeBackgroundPitch(scrollValue);
+    });
+    const degree = 60;
+    rangeSliderR.max = degree;
+    rangeSliderR.value = degree / 2;
+    rangeSliderR.addEventListener('input', function() {
+        const scrollValue = this.value - degree / 2;
+        if (scrollValue <= 0) {
+            rulerR.style.transform = `rotateZ(${Math.abs(scrollValue)}deg)`;
+        } else {
+            rulerR.style.transform = `rotateZ(-${scrollValue}deg)`;
+        }
+        changeBackgroundRoll(scrollValue * 2);
+    });
+</script>
+
+
+</html>

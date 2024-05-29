@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Change Color on Click</title>
+    <style>
+        .red {
+            background-color: red;
+        }
+        
+        .green {
+            background-color: green;
+        }
+        
+        .blue {
+            background-color: blue;
+        }
+        
+        #colorButton {
+            width: 100px;
+            height: 50px;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        #clock {
+            font-size: 24px;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+    <button id="colorButton" onclick="changeColor()">Click me to change color</button>
+    <div id="clock"></div>
+    <script>
+        var colors = ['red', 'green', 'blue'];
+        var currentColorIndex = 0;
+
+        function changeColor() {
+            var button = document.getElementById("colorButton");
+            var currentColor = colors[currentColorIndex];
+            button.className = currentColor;
+            currentColorIndex = (currentColorIndex + 1) % colors.length;
+        }
+    </script>
+    <script>
+        function updateClock() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
+
+            // Pad single digit values with leading zero
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            var timeString = hours + ':' + minutes + ':' + seconds;
+
+            document.getElementById('clock').textContent = timeString;
+        }
+
+        // Call updateClock() initially to avoid initial delay
+        updateClock();
+
+        // Update the clock every second
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+
+</html>
