@@ -477,10 +477,11 @@
 </body>
 <script>
     let dataRaw = null;
+    let Debug = false
 
     function updateJS(data) {
+        if (Debug) return;
         dataRaw = data
-
         var event = new Event('input');
         //compass
         document.getElementById('rangeInput').value = data['compass_heading'];
@@ -534,7 +535,6 @@
     const maxAltitude = 2000;
     const minAltitude = -500;
     const pixelstep = divisionHeight + ((divisionHeight * 2) / step);
-
     rulerAlt.style.top = divisionHeight * step * 2.8 + 'px';
 
     function one_division(ruler, i_n, content) {
@@ -671,8 +671,6 @@
     function changeBackground() {
         bg.style.background = `linear-gradient(${stringRoll}, ${stringPitch})`;
     }
-
-
 
     rangeSliderP.max = maxPitch + Math.abs(minPitch);
     rangeSliderP.value = maxPitch;

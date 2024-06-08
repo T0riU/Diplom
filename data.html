@@ -142,13 +142,11 @@
     </div>
 
     <script>
+        let dataRaw
+
         function updateJS(number) {
             document.getElementById('imu_yaw').value = number;
         }
-    </script>
-
-    <script>
-        let dataRaw
 
         function updateVariables(data) {
             dataRaw = data
