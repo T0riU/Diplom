@@ -52,6 +52,7 @@ class StatusManager:
 class TelemetryApp:
     def __init__(self, root):
         self.root = root
+        self.root.resizable(False, False)
         self.root.title("MAVLink Connection")
         self.default_ip = '192.168.160.1'
         self.default_port = '14550'
@@ -248,7 +249,7 @@ class MainController:
             'gps_lon': '',
             'gps_alt': ''
         }
-        self.DEBUG = True
+        self.DEBUG = False
 
         env = Environment(
             loader=FileSystemLoader('.'),
